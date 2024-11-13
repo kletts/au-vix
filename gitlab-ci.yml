@@ -1,0 +1,26 @@
+# This is how the gitlab cicd yml would look, equivalent to the github actions
+variables:
+  RENV_PATHS_CACHE: ${CI_PROJECT_DIR}/cache
+  RENV_PATHS_LIBRARY: ${CI_PROJECT_DIR}/renv/library
+
+cache:
+  key: ${CI_JOB_NAME}
+  paths:
+    - ${RENV_PATHS_CACHE}
+    - ${RENV_PATHS_LIBRARY}
+
+before_script:
+  - apt-get update && apt-get update -y && apt-get install -y git
+  - Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
+  - Rscript -e "renv::restore()"
+
+run:
+  image: rocker/r-ver:4.4.0
+  script:
+      - Rscript run.R
+      - git config user.email "ci-bot@email.com"
+      - git config user.name "ci-bot"
+      - git remote add gitlab_origin https://avixrunner:$PAT@gitlab.com/bizscisolve/avix.git
+      - git add .
+      - git commit -m "push back from pipeline"
+      - git push gitlab_origin HEAD:master -o ci.skip # prevent triggering pipeline again
