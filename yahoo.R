@@ -64,7 +64,8 @@ read_yahoo <- function(ticker,
                        end_date=NULL) {
     freq <- match.arg(freq)
     if (is.null(start_date)==TRUE) {
-        start_date <- if_else(freq=="Monthly", 0, yahoo_period(Sys.Date() - years(1)))
+        if (freq=="Monthly") { start_date <- 0 } 
+        else { start_date <- yahoo_period(Sys.Date() - lubridate::years(1)) } 
     } else {
         start_date <- yahoo_period(as.Date(start_date))
     }
@@ -102,3 +103,6 @@ read_yahoo <- function(ticker,
         return(data$chart$error)
     }}
 
+eom <- function(x, n=0) {
+    lubridate::ceiling_date(x, unit = "month") + base::months(n) - lubridate::days(1)
+    }
