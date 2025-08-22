@@ -7,7 +7,7 @@ if (max(data$Date) < Sys.Date() - 1) {
     vix <- read_yahoo("^AXVI", freq="Monthly")
     data <- vix |>      
         dplyr::filter(Measure=="adjclose") |>
-        dplyr::mutate(Date=dplyr::if_else(dplyr::row_number() == c(1,2), eom(Date, 0), Date))  |> 
+        dplyr::mutate(Date=dplyr::if_else(dplyr::row_number() %in% c(1,2), eom(Date, 0), Date))  |> 
         dplyr::select(Date, VIX=Value) |> 
         dplyr::bind_rows(data) |> 
         dplyr::distinct(Date, .keep_all = TRUE) |> 
@@ -21,7 +21,7 @@ if (max(data$Date) < Sys.Date() - 1) {
     asx <- read_yahoo("^AXJT", freq="Monthly") 
     data <- asx |>
         dplyr::filter(Measure=="adjclose") |>
-        dplyr::mutate(Date=dplyr::if_else(dplyr::row_number() == c(1,2), eom(Date, 0), Date)) |> 
+        dplyr::mutate(Date=dplyr::if_else(dplyr::row_number() %in% c(1,2), eom(Date, 0), Date)) |> 
         dplyr::select(Date, ASXAccum=Value) |> 
         dplyr::bind_rows(data) |> 
         dplyr::distinct(Date, .keep_all = TRUE) |> 
